@@ -1,0 +1,5 @@
+= Notice d'instalation
+:toc:
+
+TODO install.sh & config.sh
+* installation dépandances et configuration du bot noip

@@ -96,5 +96,8 @@ ENV/
 .ropeproject
 
 # Pycharm
-
 .idea/
+
+# Application logs
+logs/*
+!logs/.keep

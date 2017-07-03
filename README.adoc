@@ -12,14 +12,33 @@ en direct.
 
 == Installation
 
-=== Configuration réseau
+Pour la partie hardware du projet, vous pouvez suivre la link:docs/notice_montage.adoc[notice de montage]
+qui vous expliquera pas à pas comment assembler les différents composants
+de l'Arithmo.
 
-=== Configuration RaspberryPI
-
-=== Montage
+Pour la partie sofware du projet, veuillez vous référer à la link:docs/notice_installation.adoc[notice d'installation]
 
 == Interface web
 
+=== Première utilisation
+* compte par défaut
+* création compte admin
+
 === Accueil
 
-=== Configuration
+=== Paramètrage des réseaux sociaux
+
+=== Perte de mot de passe
+
+== Contribution
+
+=== Développement
+
+=== Participation
+
+== Remerciements
+
+== Licence
+
+Le projet dans son ensemble, pour ce qui est du fruit du travail des membres
+de l'équipe Arithmo, est sous licence image:docs/BeerWare_Logo.png[]
