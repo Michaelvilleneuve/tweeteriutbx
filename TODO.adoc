@@ -1,0 +1,11 @@
+= TODO
+
+* faire plan de gestion ( cf example .Adoc)
+* faire readme
+** technos employer
+** doc code python et arduino
+* interface web ?
+* api tweeter pour webhook
+* compte noip pour app
+* compte tweeter dev pour app
+* enregistrement app sut tweeter dev
