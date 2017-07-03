@@ -1,0 +1,27 @@
+= Notice for developer
+:toc: right
+
+This document describe how install and configure source code from this repo
+in order to contribute.
+
+== Python part
+
+=== Requirements
+
+* python 3.5.2 or newer
+* flask latest
+* python-twitter 3.3
+
+You can install python dependencies with pip.
+Go to the root of the project folder and tip the following command
+
+[source]
+----
+pip install -r requierements.txt
+----
+
+=== Architecture
+
+
+
+== Arduino parts
