@@ -20,12 +20,16 @@
  ****************************************************/
 
 #include <Wire.h>
+#include <stdbool.h>
 #include "Adafruit_GFX.h"
 #include "Adafruit_LEDBackpack.h"
-#include <stdbool.h>
 
-Adafruit_8x8matrix matrix[4];
+#define SLAVE_ADDRESS 0x12
+
+int dataReceived = 0;
+int totalFollow = 0;
 bool init_arithmo = 0;
+Adafruit_8x8matrix matrix[4];
 static const uint8_t PROGMEM
 arithmo_a[] = {B001110,B010010,B100010,B101010,B100010,B101010,B101010,B111110},
 arithmo_r[] = {B111100,B100110,B101010,B101010,B100010,B101010,B101010,B111110},
@@ -37,27 +41,41 @@ arithmo_o[] = {B001110,B010010,B100010,B101010,B101010,B101010,B100010,B111110};
 
 void setup() {
   Serial.begin(9600);
+  Wire.begin(SLAVE_ADDRESS);
+  Wire.onReceive(receiveDataRaspberryPi);
   Serial.println("8x8 LED Matrix Test");
-  for(uint8_t i = 0 ; i < 4 ; i++) {
+  for(int i = 0 ; i < 4 ; i++) {
     Adafruit_8x8matrix matrix[i] = Adafruit_8x8matrix();
   }
-  for(uint8_t i = 0 ; i < 4 ; i++) {
+  for(int i = 0 ; i < 4 ; i++) {
     matrix[i].begin(0x70 + i);
   }
 }
 
 void initMatrix() {
-  for (int8_t i = 0 ; i < 4 ; i++) {
+  for (int i = 0 ; i < 4 ; i++) {
     matrix[i].setTextSize(1);
     matrix[i].setTextWrap(false);
     matrix[i].setTextColor(LED_ON);
   }
 }
 
+void setNumberFollowers() {
+  
+}
+
+void receiveDataRaspberryPi(int byteCount){
+  while(Wire.available()) {
+    dataReceived = Wire.read();
+    Serial.println(dataReceived);
+    totalFollow = dataReceived;
+  }
+}
+
 void writeDisplayMessage(String message, int displayDelay) {
-  uint8_t messageLength = message.length();
-  for (int8_t x = 8 ; x >= -(messageLength * 6) - 24 ; x--) {
-    for (int8_t i = 0 ; i < 4 ; i++) {
+  int messageLength = message.length();
+  for (int x = 8 ; x >= - (messageLength * 6) - 24 ; x--) {
+    for (int i = 0 ; i < 4 ; i++) {
       matrix[i].clear();
       matrix[i].setCursor(x + (i * 8), 0);
       matrix[i].print(message);
@@ -77,6 +95,9 @@ void writeDisplayFollowers(String social, float number, int displayDelay) {
     number /= 1000;
     message = message + int(number) + "K";
   }
+  else if(number <= 0) {
+    message = "...Initialisation...";
+  }
   else {
     message = message + int(number);
   }
@@ -84,8 +105,8 @@ void writeDisplayFollowers(String social, float number, int displayDelay) {
 }
 
 void writeDisplayMatrixLogoArithmo(int displayDelay) {
-  for (int8_t x = 8 ; x >= -44 - 24 ; x--) {
-    for (int8_t i = 0 ; i < 4 ; i++) {
+  for (int x = 8 ; x >= -44 - 24 ; x--) {
+    for (int i = 0 ; i < 4 ; i++) {
       matrix[i].clear();
       matrix[i].drawBitmap(x + (i * 8) + 0, 0, arithmo_a, 8, 8, LED_ON);
       matrix[i].drawBitmap(x + (i * 8) + 6, 0, arithmo_r, 8, 8, LED_ON);
@@ -102,19 +123,16 @@ void writeDisplayMatrixLogoArithmo(int displayDelay) {
 }
 
 void loop() {
-  for (int8_t i = 0 ; i < 4 ; i++) {
+  for (int i = 0 ; i < 4 ; i++) {
     matrix[i].clear();
   }
   initMatrix();
 
-  if(init_arithmo == 0) {
+  if(init_arithmo == 0 or totalFollow == 0) {
     writeDisplayMatrixLogoArithmo(50);
   }
-  
-  writeDisplayFollowers("Twitter", 1234567, 40);
-  writeDisplayFollowers("Twitch", 12345, 40);
-  writeDisplayFollowers("Facebook", 123456, 40);
-  writeDisplayFollowers("Instagram", 1234, 40);
+
+  writeDisplayFollowers("Twitter", totalFollow, 40);
 
   delay(1000);
 }
