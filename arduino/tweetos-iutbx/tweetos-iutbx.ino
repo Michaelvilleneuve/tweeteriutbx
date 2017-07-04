@@ -22,80 +22,18 @@
 #include <Wire.h>
 #include "Adafruit_GFX.h"
 #include "Adafruit_LEDBackpack.h"
+#include <stdbool.h>
 
 Adafruit_8x8matrix matrix[4];
-
-/*static const uint8_t PROGMEM
-arithmo_A[] = {
-  B001110,
-  B010010,
-  B100010,
-  B101010,
-  B100010,
-  B101010,
-  B101010,
-  B111110
-},
-arithmo_R[] = {
-  B111100,
-  B100110,
-  B101010,
-  B101010,
-  B100010,
-  B101010,
-  B101010,
-  B111110
-},
-arithmo_I[] = {
-  B111110,
-  B110110,
-  B111110,
-  B110110,
-  B110110,
-  B110110,
-  B110110,
-  B111110
-},
-arithmo_T[] = {
-  B111110,
-  B100010,
-  B110110,
-  B010100,
-  B010100,
-  B010100,
-  B010100,
-  B011100
-},
-arithmo_H[] = {
-  B111110,
-  B101010,
-  B101010,
-  B100010,
-  B101010,
-  B101010,
-  B111010,
-  B111110
-},
-arithmo_M[] = {
-  B001110,
-  B011010,
-  B110010,
-  B100010,
-  B100010,
-  B101010,
-  B101010,
-  B111110
-},
-arithmo_0[] = {
-  B001110,
-  B010010,
-  B100010,
-  B101010,
-  B101010,
-  B101010,
-  B100010,
-  B111110
-};*/
+bool init_arithmo = 0;
+static const uint8_t PROGMEM
+arithmo_a[] = {B001110,B010010,B100010,B101010,B100010,B101010,B101010,B111110},
+arithmo_r[] = {B111100,B100110,B101010,B101010,B100010,B101010,B101010,B111110},
+arithmo_i[] = {B111110,B110110,B111110,B110110,B110110,B110110,B110110,B111110},
+arithmo_t[] = {B111110,B100010,B110110,B010100,B010100,B010100,B010100,B011100},
+arithmo_h[] = {B111110,B101010,B101010,B100010,B101010,B101010,B111010,B111110},
+arithmo_m[] = {B001110,B011010,B110010,B100010,B100010,B101010,B101010,B111110},
+arithmo_o[] = {B001110,B010010,B100010,B101010,B101010,B101010,B100010,B111110};
 
 void setup() {
   Serial.begin(9600);
@@ -116,41 +54,67 @@ void initMatrix() {
   }
 }
 
-void writeDisplayMessage(String msg) {
-  
-  uint8_t temp = msg.length();
-  for (int8_t x = 8 ; x >= -(temp*6)-24; x--) {
+void writeDisplayMessage(String message, int displayDelay) {
+  uint8_t messageLength = message.length();
+  for (int8_t x = 8 ; x >= -(messageLength * 6) - 24 ; x--) {
     for (int8_t i = 0 ; i < 4 ; i++) {
       matrix[i].clear();
       matrix[i].setCursor(x + (i * 8), 0);
-      matrix[i].print(msg);
+      matrix[i].print(message);
       matrix[i].writeDisplay();
     }
-    delay(100);
+    delay(displayDelay);
   }
 }
 
-/*void writeDisplayMatrix() {
-  matrix[0].drawBitmap(0, 0, arithmo_A, 8, 8, LED_ON);
-  matrix[0].writeDisplay();
-  matrix[1].writeDisplay();
-  matrix[2].writeDisplay();
-  matrix[3].writeDisplay();
-  delay(2500);
-}*/
+void writeDisplayFollowers(String social, float number, int displayDelay) {
+  String message = social + ":";
+  if(number >= 1000000) {
+    number /= 1000000;
+    message = message + number + "M";
+  }
+  else if(number >= 100000) {
+    number /= 1000;
+    message = message + int(number) + "K";
+  }
+  else {
+    message = message + int(number);
+  }
+  writeDisplayMessage(message, displayDelay);
+}
+
+void writeDisplayMatrixLogoArithmo(int displayDelay) {
+  for (int8_t x = 8 ; x >= -44 - 24 ; x--) {
+    for (int8_t i = 0 ; i < 4 ; i++) {
+      matrix[i].clear();
+      matrix[i].drawBitmap(x + (i * 8) + 0, 0, arithmo_a, 8, 8, LED_ON);
+      matrix[i].drawBitmap(x + (i * 8) + 6, 0, arithmo_r, 8, 8, LED_ON);
+      matrix[i].drawBitmap(x + (i * 8) + 12, 0, arithmo_i, 8, 8, LED_ON);
+      matrix[i].drawBitmap(x + (i * 8) + 18, 0, arithmo_t, 8, 8, LED_ON);
+      matrix[i].drawBitmap(x + (i * 8) + 24, 0, arithmo_h, 8, 8, LED_ON);
+      matrix[i].drawBitmap(x + (i * 8) + 30, 0, arithmo_m, 8, 8, LED_ON);
+      matrix[i].drawBitmap(x + (i * 8) + 36, 0, arithmo_o, 8, 8, LED_ON);
+      matrix[i].writeDisplay();
+    }
+    delay(displayDelay);
+  }
+  init_arithmo = 1;
+}
 
 void loop() {
   for (int8_t i = 0 ; i < 4 ; i++) {
     matrix[i].clear();
   }
   initMatrix();
+
+  if(init_arithmo == 0) {
+    writeDisplayMatrixLogoArithmo(50);
+  }
   
-  writeDisplayMessage("Projet");
-  writeDisplayMessage("Arithmo");
-  writeDisplayMessage("Twitter:123459");
-  writeDisplayMessage("Twitter:12345");
-  
-  /*writeDisplayMatrix(arithmo_M);*/
+  writeDisplayFollowers("Twitter", 1234567, 40);
+  writeDisplayFollowers("Twitch", 12345, 40);
+  writeDisplayFollowers("Facebook", 123456, 40);
+  writeDisplayFollowers("Instagram", 1234, 40);
 
   delay(1000);
 }
