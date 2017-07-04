@@ -25,14 +25,85 @@
 
 Adafruit_8x8matrix matrix[4];
 
+/*static const uint8_t PROGMEM
+arithmo_A[] = {
+  B001110,
+  B010010,
+  B100010,
+  B101010,
+  B100010,
+  B101010,
+  B101010,
+  B111110
+},
+arithmo_R[] = {
+  B111100,
+  B100110,
+  B101010,
+  B101010,
+  B100010,
+  B101010,
+  B101010,
+  B111110
+},
+arithmo_I[] = {
+  B111110,
+  B110110,
+  B111110,
+  B110110,
+  B110110,
+  B110110,
+  B110110,
+  B111110
+},
+arithmo_T[] = {
+  B111110,
+  B100010,
+  B110110,
+  B010100,
+  B010100,
+  B010100,
+  B010100,
+  B011100
+},
+arithmo_H[] = {
+  B111110,
+  B101010,
+  B101010,
+  B100010,
+  B101010,
+  B101010,
+  B111010,
+  B111110
+},
+arithmo_M[] = {
+  B001110,
+  B011010,
+  B110010,
+  B100010,
+  B100010,
+  B101010,
+  B101010,
+  B111110
+},
+arithmo_0[] = {
+  B001110,
+  B010010,
+  B100010,
+  B101010,
+  B101010,
+  B101010,
+  B100010,
+  B111110
+};*/
+
 void setup() {
   Serial.begin(9600);
   Serial.println("8x8 LED Matrix Test");
   for(uint8_t i = 0 ; i < 4 ; i++) {
     Adafruit_8x8matrix matrix[i] = Adafruit_8x8matrix();
-    /*matrix[i].begin(0x70 + i);*/
   }
-    for(uint8_t i = 0 ; i < 4 ; i++) {
+  for(uint8_t i = 0 ; i < 4 ; i++) {
     matrix[i].begin(0x70 + i);
   }
 }
@@ -46,7 +117,9 @@ void initMatrix() {
 }
 
 void writeDisplayMessage(String msg) {
-  for (int8_t x = 0 ; x >= -24; x--) {
+  
+  uint8_t temp = msg.length();
+  for (int8_t x = 8 ; x >= -(temp*6)-24; x--) {
     for (int8_t i = 0 ; i < 4 ; i++) {
       matrix[i].clear();
       matrix[i].setCursor(x + (i * 8), 0);
@@ -55,33 +128,29 @@ void writeDisplayMessage(String msg) {
     }
     delay(100);
   }
-  delay(2500);
 }
 
-//void writeDisplayMatrix(matrix) {
-//  matrix[0].drawBitmap(0, 0, smile_bmp, 8, 8, LED_ON);
-//  matrix[0].writeDisplay();
-//  matrix[1].writeDisplay();
-//  matrix[2].writeDisplay();
-//  matrix[3].writeDisplay();
-//  delay(2500);
-//}
+/*void writeDisplayMatrix() {
+  matrix[0].drawBitmap(0, 0, arithmo_A, 8, 8, LED_ON);
+  matrix[0].writeDisplay();
+  matrix[1].writeDisplay();
+  matrix[2].writeDisplay();
+  matrix[3].writeDisplay();
+  delay(2500);
+}*/
 
 void loop() {
   for (int8_t i = 0 ; i < 4 ; i++) {
     matrix[i].clear();
   }
   initMatrix();
-
+  
   writeDisplayMessage("Projet");
   writeDisplayMessage("Arithmo");
-
-//  static const uint8_t PROGMEM
-//  smile_a[] = {
-//    
-//  }
-//
-//  writeDisplayMatrix();
+  writeDisplayMessage("Twitter:123459");
+  writeDisplayMessage("Twitter:12345");
+  
+  /*writeDisplayMatrix(arithmo_M);*/
 
   delay(1000);
 }
