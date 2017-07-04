@@ -11,6 +11,7 @@ in order to contribute.
 * python 3.5.2 or newer
 * flask latest
 * python-twitter 3.3
+* sqlite
 
 You can install python dependencies with pip.
 Go to the root of the project folder and tip the following command
@@ -22,6 +23,9 @@ pip install -r requierements.txt
 
 === Architecture
 
+=== Environment variables
 
+* FLASK_DEBUG = 1
+* LOGLEVEL = <logger constant>
 
 == Arduino parts

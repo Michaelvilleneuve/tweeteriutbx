@@ -2,11 +2,21 @@ import logging
 import os
 
 import time
-from flask import Flask, request
 
-from TweetAPI.TweeterAPI import TweeterAPI
+import sqlite3
+import twitter
+from flask import Flask, request, render_template, session, flash, redirect, url_for
+
+HOST = '127.0.0.1'
+PORT = 5000  # change to 80 in prod with sudo run
 
 app = Flask(__name__)
+app.config.from_object(__name__)  # Load config from this file.
+
+app.config.update(dict(
+    DATABASE=os.path.join(app.root_path + '/db', 'arithmo.sqlite'),
+    SECRET_KEY='Asup3rScr37$#keYt0h4%rdtoF1nD'
+))
 
 log_level = os.environ.get("LOGLEVEL") or 'NOTSET'
 
@@ -30,34 +40,41 @@ file_handler.setFormatter(formatter)
 Log.addHandler(console_handler)
 Log.addHandler(file_handler)
 
-PORT = 5000
-HOST = "127.0.0.1"  # ip externe de la machine
-
 
 @app.route('/')
 def hello_world():
-    return 'Hello World!', 418
+    return render_template('welcome.html')
 
 
 @app.route('/api/tweeter', methods=['GET'])
 def tweet_webhook():
     Log.info("Incoming message : %s", request.args)
-    crc_token = request.args['crc_token']
-    res = tweeter.validateCallbackURL(crc_token)
-    return res.__str__(), 200
+    return 'Hello', 200
 
 
 @app.route('/api/tweeter', methods=['POST'])
 def tweet_request():
-    Log.info("Incomming POST request from tweeter : %s", request.args)
-    x_tweeter_webhook_signature = request.args['x-tweeter-webhook-signature']
+    Log.info("Incoming POST request from tweeter : %s", request.args)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    pass
+
+
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    flash('You were logged out')
+    return redirect(url_for('show_entries'))
 
 
 def run():
-    Log.info("Start server at host http://%s:%i", HOST, PORT)  # Logging
+    Log.info("Start server at host http://%s:%i", HOST, PORT)
     app.run(port=PORT, host=HOST)
+    Log.info("Create Twitter api instance")
+    # api = twitter.Api(consumer_key='plop')
 
 
 if __name__ == '__main__':
-    tweeter = TweeterAPI()
     run()
