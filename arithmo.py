@@ -6,7 +6,11 @@ from flask import Flask, request, render_template, session, flash, redirect, url
 
 from Arduino import Arduino
 from Arithmo import TweeterDAO
-from Arithmo.ArithmoThread import ArithmoThread
+from Arithmo import ArithmoThread
+from Arithmo import UpdateThread
+
+USER_STREAM_THREAD = "UserStream"
+UPDATE_THREAD = "UpdateThread"
 
 HOST = '127.0.0.1'
 PORT = 5000  # change to 80 in prod with sudo run
@@ -72,22 +76,32 @@ def logout():
 
 def run():
     Log.info("Create Twitter api instance")
-    tweeter_api = TweeterDAO()
-    tweeter_api.set_api('8G9uQK2sjZDkU2BG58dvOShQU', 'nG4nq29rQdsNfu9Cxpe5q1j9RjjIpWHDnWOStN9Be21zS48C7n',
+    twitter_api = TweeterDAO()
+    twitter_api.set_api('8G9uQK2sjZDkU2BG58dvOShQU', 'nG4nq29rQdsNfu9Cxpe5q1j9RjjIpWHDnWOStN9Be21zS48C7n',
                         '1648488114-gFdXDFyIrQIFTfXRKY5xX59pAFjPY9iCTxFWeyo',
-                        'UDud8JyFUqpN06xJAgOcCyTBwpTZsgSfA7C7V47oBnICK')
+                        'UDud8JyFUqpN06xJAgOcCyTBwpTZsgSfA7C7V47oBnICK',
+                        '1648488114')
     try:
-        tweeter_api.get_followers_count()
-        Log.debug(tweeter_api.nb_followers)
         arduino = Arduino()
-        arduino.send_followers_count(tweeter_api.nb_followers)
-        stream_user_thread = ArithmoThread(1, "UserStream", tweeter_api, arduino)
+        stream_user_thread = ArithmoThread(1, USER_STREAM_THREAD, twitter_api, arduino)
         stream_user_thread.start()
+        update_thread = UpdateThread(2, UPDATE_THREAD, twitter_api, arduino)
+        update_thread.start()
     except Exception as e:
         Log.error(e.__str__())
+    time.sleep(0.5)
+    twitter_api.send_message(
+        "Hi, I'm @Projet_Arithmo. Now on air this " + time.strftime("%a the %d %d %Y at %H:%M:%S") + ";) Welcome to " +
+        twitter_api.get_user('1648488114').name)
 
     Log.info("Start server at host http://%s:%i", HOST, PORT)
     app.run(port=PORT, host=HOST)
+
+    @app.teardown_appcontext
+    def stop():
+        # Stop userStream connexion
+        stream_user_thread.name.exit()
+        update_thread.name.exit()
 
 
 if __name__ == '__main__':

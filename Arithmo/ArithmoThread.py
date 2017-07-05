@@ -35,16 +35,24 @@ class ArithmoThread(threading.Thread):
         threading.Thread.__init__(self)
         self.threadId = threadId
         self.name = name
-        self.tweeter_api = tweeter_api
+        self.twitter_api = tweeter_api
         self.arduino = arduino
 
     def get_user_stream(self):
-        for line in self.tweeter_api.get_stream():
-            Log.info(line)
-            if 'target' in line.keys():
-                Log.info(line['target']['followers_count'])
-                self.tweeter_api.nb_followers = line['target']['followers_count']
-                self.arduino.send_followers_count(self.tweeter_api.nb_followers)
+        try:
+            for line in self.twitter_api.get_stream():
+                Log.info(line)
+                if 'target' in line.keys():
+                    now = time.time()
+                    Log.info(line['target']['followers_count'])
+                    self.twitter_api.nb_followers = line['target']['followers_count']
+                    self.arduino.send_followers_count(
+                        '@' + self.twitter_api.get_user('1648488114').name + str(self.twitter_api.nb_followers))
+                elif 'friends' in line.keys():
+                    self.twitter_api.update_followers_count()
+                    self.arduino.send_followers_count('@' + self.twitter_api.get_user('1648488114').name + str(self.twitter_api.nb_followers))
+        except Exception as e:
+            Log.error(e)
 
     def run(self):
         self.get_user_stream()
