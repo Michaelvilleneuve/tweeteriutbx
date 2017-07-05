@@ -47,4 +47,4 @@ Pour initialiser la base de donnée, lancer la commande `flask initdb`
 == Licence
 
 Le projet dans son ensemble, pour ce qui est du fruit du travail des membres
-de l'équipe Arithmo, est sous licence image:docs/BeerWare_Logo.png[]
+de l'équipe Arithmo, est sous licence image:docs/pics/BeerWare_Logo.png[]
