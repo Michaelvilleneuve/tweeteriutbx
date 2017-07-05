@@ -3,6 +3,7 @@
 #define SLAVE_ADDRESS 0x12
 int dataReceived = 0;
 
+/* main */
 void setup() {
     Serial.begin(9600);
     Wire.begin(SLAVE_ADDRESS);
@@ -10,10 +11,12 @@ void setup() {
     Wire.onRequest(sendData);
 }
 
+/* délai entre les instructions */
 void loop() {
     delay(100);
 }
 
+/* réception des données de la raspberry pi */
 void receiveData(int byteCount){
     while(Wire.available()) {
         dataReceived = Wire.read();
@@ -22,6 +25,7 @@ void receiveData(int byteCount){
     }
 }
 
+/* envoie de données raspberry pi */
 void sendData(){
     int envoi = dataReceived + 1;
     Wire.write(envoi);
