@@ -101,3 +101,5 @@ ENV/
 # Application logs
 logs/*
 !logs/.keep
+
+test.json

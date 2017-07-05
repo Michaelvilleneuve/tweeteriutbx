@@ -5,7 +5,8 @@ import time
 from flask import Flask, request, render_template, session, flash, redirect, url_for
 
 from Arduino import Arduino
-from utils import TweeterDAO
+from Arithmo import TweeterDAO
+from Arithmo.ArithmoThread import ArithmoThread
 
 HOST = '127.0.0.1'
 PORT = 5000  # change to 80 in prod with sudo run
@@ -70,27 +71,22 @@ def logout():
 
 
 def run():
-    global nb_followers
-    Log.info("Start server at host http://%s:%i", HOST, PORT)
     Log.info("Create Twitter api instance")
     tweeter_api = TweeterDAO()
-    api = tweeter_api.get_api('8G9uQK2sjZDkU2BG58dvOShQU', 'nG4nq29rQdsNfu9Cxpe5q1j9RjjIpWHDnWOStN9Be21zS48C7n',
-                              '1648488114-gFdXDFyIrQIFTfXRKY5xX59pAFjPY9iCTxFWeyo',
-                              'UDud8JyFUqpN06xJAgOcCyTBwpTZsgSfA7C7V47oBnICK')
+    tweeter_api.set_api('8G9uQK2sjZDkU2BG58dvOShQU', 'nG4nq29rQdsNfu9Cxpe5q1j9RjjIpWHDnWOStN9Be21zS48C7n',
+                        '1648488114-gFdXDFyIrQIFTfXRKY5xX59pAFjPY9iCTxFWeyo',
+                        'UDud8JyFUqpN06xJAgOcCyTBwpTZsgSfA7C7V47oBnICK')
     try:
-        users = tweeter_api.get_friends()
-        print([u.screen_name for u in users])
-        Log.debug(users.__str__())
-        nb_followers = tweeter_api.followers_count()
-        Log.debug(nb_followers)
+        tweeter_api.get_followers_count()
+        Log.debug(tweeter_api.nb_followers)
         arduino = Arduino()
-        arduino.send_followers_count(nb_followers)
-        for line in tweeter_api.get_stream():
-            Log.info(line)
+        arduino.send_followers_count(tweeter_api.nb_followers)
+        stream_user_thread = ArithmoThread(1, "UserStream", tweeter_api, arduino)
+        stream_user_thread.start()
     except Exception as e:
         Log.error(e.__str__())
 
-
+    Log.info("Start server at host http://%s:%i", HOST, PORT)
     app.run(port=PORT, host=HOST)
 
 
