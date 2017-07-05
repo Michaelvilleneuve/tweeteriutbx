@@ -1,6 +1,5 @@
 import twitter
 
-
 class TweeterDAO:
     def __init__(self):
         self._api = None
@@ -12,7 +11,6 @@ class TweeterDAO:
                               access_token_key=access_token,
                               access_token_secret=access_token_secret)
             self._api = api
-        return self._api
 
     def followers_count(self):
         """
@@ -28,3 +26,6 @@ class TweeterDAO:
         :return:
         """
         return self._api.GetFriends()
+
+    def get_stream(self):
+        return self._api.GetUserStream()

@@ -1,4 +1,4 @@
-from .I2C import I2C
+from .Arduino import Arduino
 
 OLD_RASPBERRY = 0
 NEW_RASPBERRY = 1

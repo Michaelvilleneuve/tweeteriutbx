@@ -4,6 +4,7 @@ import time
 
 from flask import Flask, request, render_template, session, flash, redirect, url_for
 
+from Arduino import Arduino
 from utils import TweeterDAO
 
 HOST = '127.0.0.1'
@@ -69,6 +70,7 @@ def logout():
 
 
 def run():
+    global nb_followers
     Log.info("Start server at host http://%s:%i", HOST, PORT)
     Log.info("Create Twitter api instance")
     tweeter_api = TweeterDAO()
@@ -81,8 +83,13 @@ def run():
         Log.debug(users.__str__())
         nb_followers = tweeter_api.followers_count()
         Log.debug(nb_followers)
+        arduino = Arduino()
+        arduino.send_followers_count(nb_followers)
+        for line in tweeter_api.get_stream():
+            Log.info(line)
     except Exception as e:
         Log.error(e.__str__())
+
 
     app.run(port=PORT, host=HOST)
 
