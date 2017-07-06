@@ -138,24 +138,41 @@ def tweet_request():
 @app.route('/setup', methods=['POST'])
 def setup():
     """First connection"""
-    logout()
+    clearing_session()
     countUsers = get_users_count()
-    if countUsers[0] == 0 and request.method == 'POST' and request.form['username'] != '' and request.form['password'] != '' and request.form['passwordvalidation'] != '' and request.form['password'] == request.form['passwordvalidation']:
-        set_user(request.form['username'], encrypt_word(request.form['password']))
-        session['logged_in'] = True
-        flash('You have created your auth and were logged in now')
+    if countUsers[0] == 0 and request.method == 'POST':
+        if request.form['username'] != '' and request.form['password'] != '' and request.form['passwordvalidation'] != '':
+            if request.form['password'] == request.form['passwordvalidation']:
+                set_user(request.form['username'], encrypt_word(request.form['password']))
+                session['logged_in'] = True
+                flash('You have created your auth and were logged in now.')
+            else:
+                flash('Error : Password/Re-Password not correct.')
+        else:
+            flash('Error : a field is null.')
+    else:
+        flash('Error : KO.')
     return hello_world()
 
 @app.route('/twitter', methods=['POST'])
 def twitter():
     """Submit Twitter tokens informations in database"""
     countUsers = get_users_count()
-    if countUsers[0] != 0 and request.method == 'POST' and session['logged_in'] == True and request.form['token'] != '' and  request.form['secrettoken'] != '':
-        reset_twitter()
-        set_twitter(request.form['token'], request.form['secrettoken'])
-        flash('Data submitted.')
+    if countUsers[0] != 0 and request.method == 'POST':
+        if session.get('logged_in'):
+            if session['logged_in'] == True:
+                if request.form['token'] != '' and request.form['secrettoken'] != '':
+                    reset_twitter()
+                    set_twitter(request.form['token'], request.form['secrettoken'])
+                    flash('Data submitted.')
+                else:
+                    flash('Error : a field is null.')
+            else:
+                flash('Error : you are not logged.')
+        else:
+            flash('Error : you are not logged.')
     else:
-        flash('Error when submitting.')
+        flash('Error : KO.')
     return hello_world()
 
 
@@ -163,27 +180,41 @@ def twitter():
 def login():
     """Log in the manage interface"""
     countUsers = get_users_count()
-    if countUsers[0] != 0 and request.method == 'POST' and request.form['username'] != '' and request.form['password'] != '':
-        username = request.form['username']
-        password = request.form['password']
-        db = get_db()
-        cur = db.execute('select * from users where pseudo = \'' + username + '\'')
-        user = cur.fetchone()
-        testPass = decrypt_word(password, user['password'])
-        if user and user['pseudo'] == username and testPass == True:
-            session['logged_in'] = True
-            flash('You were logged in')
+    if countUsers[0] != 0 and request.method == 'POST':
+        if  request.form['username'] != '' and request.form['password'] != '':
+            username = request.form['username']
+            password = request.form['password']
+            db = get_db()
+            cur = db.execute('select * from users where pseudo = \'' + username + '\'')
+            user = cur.fetchone()
+            if user and user['pseudo'] and user['pseudo'] is not None and user['pseudo'] == username:
+                testPass = decrypt_word(password, user['password'])
+                if testPass == True:
+                    session['logged_in'] = True
+                    flash('You were logged in.')
+                else:
+                    flash('Error : Username/Password not correct.')
+            else:
+                flash('Error : Username/Password not correct.')
+        else:
+            flash('Error: a field is null.')
+    else:
+        flash('Error : KO.')
     return hello_world()
 
-@app.route('/logout')
-def logout():
-    """Log out the manage interface"""
+def clearing_session():
+    """destroy session"""
     session['logged_in'] = False
     session.pop('logged_in', None)
     for key in session.keys():
         session.pop[key]
     session.clear()
-    flash('You were logged out')
+
+@app.route('/logout')
+def logout():
+    """Log out the manage interface"""
+    clearing_session()
+    flash('You were logged out.')
     return hello_world()
 
 def encrypt_word(wordClean):

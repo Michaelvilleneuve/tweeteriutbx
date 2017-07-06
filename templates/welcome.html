@@ -1,19 +1,21 @@
 {% extends "layout.html" %}
 {% block body %}
-    {% if session.logged_in %}
-        <h2>Twitter : </h2>
-        <form action="/twitter" method="POST">
-            <input type="text" value="" placeholder="Token" name="token">
-            <input type="text" value="" placeholder="Secret Token" name="secrettoken">
-            <input type="submit" value="Submit">
-        </form>
-    {% endif %}
     {% if not session.logged_in %}
+        <h3>Authentification : </h3>
         <form action="/login" method="POST">
-            <input type="text" value="" placeholder="Username" name="username" required>
-            <input type="password" value="" placeholder="Password" name="password" required>
-            <input type="submit" value="Log in">
+            <input type="text" value="" placeholder="Username" name="username" required><br />
+            <input type="password" value="" placeholder="Password" name="password" required><br />
+            <input type="submit" class="button button-primary" value="Log in">
         </form>
     {% endif %}
-
+    {% if session.logged_in %}
+        <a href="{{ url_for('logout') }}" class="button button-primary">log out</a><br>
+        <h3>Twitter : </h3>
+        <a href="https://dev.twitter.com/oauth/overview/application-owner-access-tokens" target="_blank">Where can I found my token ?</a>
+        <form action="/twitter" method="POST">
+            <input type="text" value="" placeholder="Token" name="token"><br />
+            <input type="text" value="" placeholder="Secret Token" name="secrettoken"><br />
+            <input type="submit" class="button button-primary" value="Submit">
+        </form>
+    {% endif %}
 {% endblock %}

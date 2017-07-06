@@ -24,11 +24,7 @@
             <div class="column">
                 <h2>Arithmo</h2>
                 <div class="metanav">
-                    {% if not session.logged_in %}
-                        <a href="{{ url_for('login') }}" class="button button-primary">log in</a>
-                    {% else %}
-                        <a href="{{ url_for('logout') }}" class="button button-primary">log out</a>
-                    {% endif %}
+
                 </div>
                 {% for message in get_flashed_messages() %}
                 <div class="flash">{{ message }}</div>
@@ -37,6 +33,6 @@
             </div>
         </div>
     </div>
-
+    <footer>Arithmo © 2017</footer>
 </body>
 </html>
