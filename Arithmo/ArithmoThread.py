@@ -47,10 +47,11 @@ class ArithmoThread(threading.Thread):
                     Log.info(line['target']['followers_count'])
                     self.twitter_api.nb_followers = line['target']['followers_count']
                     self.arduino.send_followers_count(
-                        '@' + self.twitter_api.get_user('1648488114').name + str(self.twitter_api.nb_followers))
+                        '@' + self.twitter_api.get_user('1648488114').name + ' ' + str(self.twitter_api.nb_followers))
                 elif 'friends' in line.keys():
                     self.twitter_api.update_followers_count()
-                    self.arduino.send_followers_count('@' + self.twitter_api.get_user('1648488114').name + str(self.twitter_api.nb_followers))
+                    self.arduino.send_followers_count(
+                        '@' + self.twitter_api.get_user('1648488114').name + ' ' + str(self.twitter_api.nb_followers))
         except Exception as e:
             Log.error(e)
 

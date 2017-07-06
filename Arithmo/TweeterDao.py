@@ -49,6 +49,7 @@ class TweeterDAO:
         Update count of followers for the user account
         """
         status = self._api.GetFollowerIDs()
+        Log.debug("Nb followers : " + str(len(status)))
         self.nb_followers = len(status)
 
     def update_followers_count(self):
