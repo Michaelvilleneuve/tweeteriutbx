@@ -1,11 +1,11 @@
-import smbus
+#import smbus
 import time
 
 
 class Arduino:
     def __init__(self):
         self.address = 0x12
-        self._arduino = smbus.SMBus(1)
+        #self._arduino = smbus.SMBus(1)
 
     def get_arduino(self):
         return self._arduino
