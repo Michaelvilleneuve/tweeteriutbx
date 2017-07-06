@@ -1,8 +1,33 @@
+import os
 import threading
 
 import time
 
+import logging
+
 update = True
+
+log_level = os.environ.get("LOGLEVEL") or 'NOTSET'
+
+# Create logger
+Log = logging.getLogger('UpdateThread')
+Log.setLevel(log_level)
+
+console_handler = logging.StreamHandler()
+console_handler.setLevel(log_level)
+
+file_handler = logging.FileHandler(
+    os.path.dirname(os.path.abspath(__file__)) + '/../logs/' + time.strftime("%d_%m_%Y") + '_tweetos-app.log')
+file_handler.setLevel(log_level)
+
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+console_handler.setFormatter(formatter)
+file_handler.setFormatter(formatter)
+
+# Add handlers
+Log.addHandler(console_handler)
+Log.addHandler(file_handler)
 
 
 class UpdateThread(threading.Thread):
@@ -14,9 +39,11 @@ class UpdateThread(threading.Thread):
         self.arduino = arduino
 
     def run(self):
+        Log.debug("UpdateStream up")
         while update:
             now = time.time()
+            Log.debug('do update ? :' )
             if now - self.twitter_api.last_update >= 60000:
                 self.twitter_api.update_followers_count()
                 self.arduino.send_followers_count(
-                    '@' + self.twitter_api.get_user('1648488114').name + str(self.twitter_api.nb_followers))
+                    '@' + self.twitter_api.get_user('1648488114').name + ' ' + str(self.twitter_api.nb_followers))
