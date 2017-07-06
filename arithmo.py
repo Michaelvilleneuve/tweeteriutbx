@@ -6,15 +6,9 @@ import time
 from flask import Flask, request, render_template, session, flash, redirect, url_for, abort, g
 from passlib.hash import sha256_crypt
 
-<<<<<<< HEAD
 #from Arduino import Arduino
 #from Arithmo import TweeterDAO
 #from Arithmo.ArithmoThread import ArithmoThread
-=======
-from Arduino import Arduino
-from Arithmo import TweeterDAO
-from Arithmo.ArithmoThread import ArithmoThread
->>>>>>> 67dd56cc4be575b80470ed1db35ffceb6ac68bbb
 
 HOST = '127.0.0.1'
 PORT = 5000  # change to 80 in prod with sudo run
@@ -144,6 +138,7 @@ def tweet_request():
 @app.route('/setup', methods=['POST'])
 def setup():
     """First connection"""
+    logout()
     countUsers = get_users_count()
     if countUsers[0] == 0 and request.method == 'POST' and request.form['username'] != '' and request.form['password'] != '' and request.form['passwordvalidation'] != '' and request.form['password'] == request.form['passwordvalidation']:
         set_user(request.form['username'], encrypt_word(request.form['password']))
@@ -214,24 +209,6 @@ def reset_all():
     return hello_world()
 
 def run():
-<<<<<<< HEAD
-=======
-    Log.info("Create Twitter api instance")
-    tweeter_api = TweeterDAO()
-    tweeter_api.set_api('8G9uQK2sjZDkU2BG58dvOShQU', 'nG4nq29rQdsNfu9Cxpe5q1j9RjjIpWHDnWOStN9Be21zS48C7n',
-                        '1648488114-gFdXDFyIrQIFTfXRKY5xX59pAFjPY9iCTxFWeyo',
-                        'UDud8JyFUqpN06xJAgOcCyTBwpTZsgSfA7C7V47oBnICK')
-    try:
-        tweeter_api.get_followers_count()
-        Log.debug(tweeter_api.nb_followers)
-        arduino = Arduino()
-        arduino.send_followers_count(tweeter_api.nb_followers)
-        stream_user_thread = ArithmoThread(1, "UserStream", tweeter_api, arduino)
-        stream_user_thread.start()
-    except Exception as e:
-        Log.error(e.__str__())
-
->>>>>>> 67dd56cc4be575b80470ed1db35ffceb6ac68bbb
     Log.info("Start server at host http://%s:%i", HOST, PORT)
     app.run(port=PORT, host=HOST)
     Log.info("Create Twitter api instance")
