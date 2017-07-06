@@ -11,10 +11,15 @@
     {% if session.logged_in %}
         <a href="{{ url_for('logout') }}" class="button button-primary">log out</a><br>
         <h3>Twitter : </h3>
-        <a href="https://dev.twitter.com/oauth/overview/application-owner-access-tokens" target="_blank">Where can I found my token ?</a>
+        Where can I found my token ? -
+        <a href="https://dev.twitter.com/oauth/overview/application-owner-access-tokens" target="_blank">1</a> -
+        <a href="https://www.slickremix.com/docs/how-to-get-api-keys-and-tokens-for-twitter/" target="_blank">2</a>
         <form action="/twitter" method="POST">
-            <input type="text" value="" placeholder="Token" name="token"><br />
-            <input type="text" value="" placeholder="Secret Token" name="secrettoken"><br />
+            <input type="text" value="" placeholder="owner_id" name="owner_id"><br />
+            <input type="text" value="" placeholder="access_token" name="token"><br />
+            <input type="text" value="" placeholder="access_token_secret" name="secrettoken"><br />
+            <input type="text" value="" placeholder="consumer_key" name="consumer_key"><br />
+            <input type="text" value="" placeholder="consumer_secret" name="consumer_secret"><br />
             <input type="submit" class="button button-primary" value="Submit">
         </form>
     {% endif %}

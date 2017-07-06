@@ -100,20 +100,18 @@ def set_user(setUsername, setPassword):
     db = get_db()
     db.execute('INSERT INTO users (pseudo, password) VALUES (\'' + setUsername + '\', \'' + setPassword + '\')')
     db.commit()
-    #db.close()
 
 def get_twitter():
     """Get informations from twitter table"""
     db = get_db()
     cur = db.execute('SELECT * FROM twitter')
     twitterData = cur.fetchone()
-    #db.close()
     return twitterData
 
-def set_twitter(setToken, setSecretToken):
+def set_twitter(setOwnerId, setToken, setSecretToken, setConsumerKey, setConsumerSecret):
     """Set informations in twitter table"""
     db = get_db()
-    db.execute('INSERT INTO twitter (token_access, token_access_secret) VALUES (\'' + setToken + '\', \'' + setSecretToken + '\')')
+    db.execute('INSERT INTO twitter (token_access, token_access_secret, consumer_key, owner_id, consumer_secret) VALUES (\'' + setToken + '\', \'' + setSecretToken + '\', \'' + setConsumerKey + '\', \'' + setOwnerId + '\', \'' + setConsumerSecret + '\')')
     db.commit()
 
 @app.route('/')
@@ -123,6 +121,7 @@ def hello_world():
     if countUsers[0] != 0:
         return render_template('welcome.html')
     else:
+        clearing_session()
         flash('For your first utilisation, you need an account.')
         return render_template('setup.html')
 
@@ -161,9 +160,9 @@ def twitter():
     if countUsers[0] != 0 and request.method == 'POST':
         if session.get('logged_in'):
             if session['logged_in'] == True:
-                if request.form['token'] != '' and request.form['secrettoken'] != '':
+                if request.form['owner_id'] != '' and request.form['token'] != '' and request.form['secrettoken'] != '' and request.form['consumer_key'] != '' and request.form['consumer_secret'] != '':
                     reset_twitter()
-                    set_twitter(request.form['token'], request.form['secrettoken'])
+                    set_twitter(request.form['owner_id'], request.form['token'], request.form['secrettoken'], request.form['consumer_key'], request.form['consumer_secret'])
                     flash('Data submitted.')
                 else:
                     flash('Error : a field is null.')
@@ -172,6 +171,7 @@ def twitter():
         else:
             flash('Error : you are not logged.')
     else:
+        clearing_session()
         flash('Error : KO.')
     return hello_world()
 
@@ -181,7 +181,7 @@ def login():
     """Log in the manage interface"""
     countUsers = get_users_count()
     if countUsers[0] != 0 and request.method == 'POST':
-        if  request.form['username'] != '' and request.form['password'] != '':
+        if request.form['username'] != '' and request.form['password'] != '':
             username = request.form['username']
             password = request.form['password']
             db = get_db()
@@ -199,6 +199,7 @@ def login():
         else:
             flash('Error: a field is null.')
     else:
+        clearing_session()
         flash('Error : KO.')
     return hello_world()
 
@@ -233,9 +234,9 @@ def reset_twitter():
 def reset_all():
     logout()
     db = get_db()
-    db.execute('DELETE FROM users')
-    db.commit()
     db.execute('DELETE FROM twitter')
+    db.commit()
+    db.execute('DELETE FROM users')
     db.commit()
     return hello_world()
 

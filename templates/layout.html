@@ -23,18 +23,18 @@
         <div class="row">
             <div class="column">
                 <h2>Arithmo</h2>
-                <div class="metanav">
+                <div class="metanav"></div>
 
-                </div>
                 {% for message in get_flashed_messages() %}
                 <div class="flash">{{ message }}</div>
                 {% endfor %}
+
                 {% block body %}{% endblock %}
             </div>
         </div>
     </div>
     <div>
-        <footer>Arithmo © 2017</footer>
+        <footer>Arithmo - 2017</footer>
     </div>
 </body>
 </html>
