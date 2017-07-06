@@ -1,6 +1,19 @@
 {% extends "layout.html" %}
 {% block body %}
     {% if session.logged_in %}
-        <p>Welcome</p>
+        <h2>Twitter : </h2>
+        <form action="/twitter" method="POST">
+            <input type="text" value="" placeholder="Token" name="token">
+            <input type="text" value="" placeholder="Secret Token" name="secrettoken">
+            <input type="submit" value="Submit">
+        </form>
     {% endif %}
+    {% if not session.logged_in %}
+        <form action="/login" method="POST">
+            <input type="text" value="" placeholder="Username" name="username" required>
+            <input type="password" value="" placeholder="Password" name="password" required>
+            <input type="submit" value="Log in">
+        </form>
+    {% endif %}
+
 {% endblock %}
