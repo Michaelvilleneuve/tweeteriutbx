@@ -43,6 +43,7 @@ class TweeterDAO:
                               access_token_secret=access_token_secret)
             self._api = api
             self.get_user(user_id)
+            self.last_update = time.time()
 
     def get_followers_count(self):
         """
@@ -54,7 +55,7 @@ class TweeterDAO:
 
     def update_followers_count(self):
         now = time.time()
-        if now - self.last_update >= 1000 * 60:
+        if now - self.last_update >= 60:
             # update nb followers
             self.get_followers_count()
             self.last_update = now

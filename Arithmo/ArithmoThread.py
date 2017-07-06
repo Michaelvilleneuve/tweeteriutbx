@@ -42,13 +42,18 @@ class ArithmoThread(threading.Thread):
         try:
             for line in self.twitter_api.get_stream():
                 Log.info(line)
-                if 'target' in line.keys():
-                    now = time.time()
-                    Log.info(line['target']['followers_count'])
-                    self.twitter_api.nb_followers = line['target']['followers_count']
-                    self.arduino.send_followers_count(
-                        '@' + self.twitter_api.get_user('1648488114').name + ' ' + str(self.twitter_api.nb_followers))
+                if 'event' in line.keys():
+                    Log.info("Incoming event" + line)
+                    if line['event'] == 'follow':
+                        Log.info("Incoming follow")
+                        Log.debug(line['event']['follow'])
+                        self.twitter_api.nb_followers = line['target']['followers_count']
+                        self.arduino.send_followers_count(
+                            '@' + self.twitter_api.get_user('1648488114').name + ' ' + str(
+                                self.twitter_api.nb_followers))
                 elif 'friends' in line.keys():
+                    Log.info('Stream open')
+                    time.sleep(1)
                     self.twitter_api.update_followers_count()
                     self.arduino.send_followers_count(
                         '@' + self.twitter_api.get_user('1648488114').name + ' ' + str(self.twitter_api.nb_followers))
@@ -56,4 +61,5 @@ class ArithmoThread(threading.Thread):
             Log.error(e)
 
     def run(self):
+        Log.info("ArithmoThread up !!")
         self.get_user_stream()
