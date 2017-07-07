@@ -5,7 +5,7 @@ Afficher le nombre de vos follower en direct !!
 
 == Présentation
 
-Issue d'un projet dans le cadre de la **semaine de l'innovation** de la formation
+Issu d'un projet dans le cadre de la **semaine de l'innovation** de la formation
 Licence Pro DAWIN de l'IUT Informatique de Bordeaux, Arithmo est un appareil
 connecté qui permet d'afficher le nombre de follower de votre compte Twitter
 en direct.
